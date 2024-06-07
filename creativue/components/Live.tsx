@@ -12,6 +12,8 @@ import LiveCursors from "./cursor/LiveCursor";
 // import { Comments } from "./comments/Comments";
 // import { CursorChat, FlyingReaction, LiveCursors, ReactionSelector } from "./index";
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from "./ui/context-menu";
+import ReactionSelector from "./reaction/ReactionButton";
+import FlyingReaction from "./reaction/FlyingReaction";
 
 type Props = {
   canvasRef: React.MutableRefObject<HTMLCanvasElement | null>;
@@ -232,7 +234,16 @@ const Live = ({ canvasRef, undo, redo }: Props) => {
       >
         <canvas ref={canvasRef} />
 
-       
+       {/* Render the reactions */}
+       {reactions.map((reaction) => (
+          <FlyingReaction
+            key={reaction.timestamp.toString()}
+            x={reaction.point.x}
+            y={reaction.point.y}
+            timestamp={reaction.timestamp}
+            value={reaction.value}
+          />
+        ))}
 
         {/* If cursor is in chat mode, show the chat cursor */}
         {cursor && (
@@ -244,7 +255,14 @@ const Live = ({ canvasRef, undo, redo }: Props) => {
           />
         )}
 
-        
+        {/* If cursor is in reaction selector mode, show the reaction selector */}
+        {cursorState.mode === CursorMode.ReactionSelector && (
+          <ReactionSelector
+            setReaction={(reaction) => {
+              setReaction(reaction);
+            }}
+          />
+        )}
 
         {/* Show the live cursors of other users */}
         <LiveCursors others={others} />
