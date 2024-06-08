@@ -45,21 +45,14 @@ export const handleCanvasMouseDown = ({
   isDrawing,
   shapeRef,
 }: CanvasMouseDown) => {
-  // get pointer coordinates
-  const pointer = canvas.getPointer(options.e);
 
-  /**
-   * get target object i.e., the object that is clicked
-   * findtarget() returns the object that is clicked
-   *
-   * findTarget: http://fabricjs.com/docs/fabric.Canvas.html#findTarget
-   */
+  const pointer = canvas.getPointer(options.e);
   const target = canvas.findTarget(options.e, false);
 
-  // set canvas drawing mode to false
+
   canvas.isDrawingMode = false;
 
-  // if selected shape is freeform, set drawing mode to true and return
+
   if (selectedShapeRef.current === "freeform") {
     isDrawing.current = true;
     canvas.isDrawingMode = true;
@@ -68,35 +61,26 @@ export const handleCanvasMouseDown = ({
   }
 
   canvas.isDrawingMode = false;
-
-  // if target is the selected shape or active selection, set isDrawing to false
   if (
     target &&
     (target.type === selectedShapeRef.current ||
       target.type === "activeSelection")
   ) {
     isDrawing.current = false;
-
-    // set active object to target
     canvas.setActiveObject(target);
 
-    /**
-     * setCoords() is used to update the controls of the object
-     * setCoords: http://fabricjs.com/docs/fabric.Object.html#setCoords
-     */
+  
     target.setCoords();
   } else {
     isDrawing.current = true;
-
-    // create custom fabric object/shape and set it to shapeRef
     shapeRef.current = createSpecificShape(
       selectedShapeRef.current,
       pointer as any
     );
 
-    // if shapeRef is not null, add it to canvas
+
     if (shapeRef.current) {
-      // add: http://fabricjs.com/docs/fabric.Canvas.html#add
+
       canvas.add(shapeRef.current);
     }
   }
@@ -160,8 +144,6 @@ export const handleCanvaseMouseMove = ({
       break;
   }
 
-  // render objects on canvas
-  // renderAll: http://fabricjs.com/docs/fabric.Canvas.html#renderAll
   canvas.renderAll();
 
   // sync shape in storage
@@ -170,7 +152,6 @@ export const handleCanvaseMouseMove = ({
   }
 };
 
-// handle mouse up event on canvas to stop drawing shapes
 export const handleCanvasMouseUp = ({
   canvas,
   isDrawing,
@@ -345,15 +326,6 @@ export const renderCanvas = ({
 
   // render all objects on canvas
   Array.from(canvasObjects, ([objectId, objectData]) => {
-    /**
-     * enlivenObjects() is used to render objects on canvas.
-     * It takes two arguments:
-     * 1. objectData: object data to render on canvas
-     * 2. callback: callback function to execute after rendering objects
-     * on canvas
-     *
-     * enlivenObjects: http://fabricjs.com/docs/fabric.util.html#.enlivenObjectEnlivables
-     */
     fabric.util.enlivenObjects(
       [objectData],
       (enlivenedObjects: fabric.Object[]) => {
@@ -367,13 +339,6 @@ export const renderCanvas = ({
           fabricRef.current?.add(enlivenedObj);
         });
       },
-      /**
-       * specify namespace of the object for fabric to render it on canvas
-       * A namespace is a string that is used to identify the type of
-       * object.
-       *
-       * Fabric Namespace: http://fabricjs.com/docs/fabric.html
-       */
       "fabric"
     );
   });
@@ -412,9 +377,6 @@ export const handleCanvasZoom = ({
 
   // calculate zoom based on mouse scroll wheel with min and max zoom
   zoom = Math.min(Math.max(minZoom, zoom + delta * zoomStep), maxZoom);
-
-  // set zoom to canvas
-  // zoomToPoint: http://fabricjs.com/docs/fabric.Canvas.html#zoomToPoint
   canvas.zoomToPoint({ x: options.e.offsetX, y: options.e.offsetY }, zoom);
 
   options.e.preventDefault();
