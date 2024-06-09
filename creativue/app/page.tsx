@@ -6,7 +6,7 @@ import Navbar from "@/components/Navbar";
 import RightSidebar from "@/components/RightSidebar";
 import { useEffect, useRef, useState } from "react";
 import { fabric } from 'fabric';
-import { handleCanvasMouseDown, handleCanvasMouseUp, handleCanvasObjectScaling, handleCanvasSelectionCreated, handleCanvasZoom, handleCanvaseMouseMove, handleResize, initializeFabric, renderCanvas } from "@/lib/canvas";
+import { handleCanvasMouseDown, handleCanvasMouseUp, handleCanvasObjectModified, handleCanvasObjectMoving, handleCanvasObjectScaling, handleCanvasSelectionCreated, handleCanvasZoom, handleCanvaseMouseMove, handlePathCreated, handleResize, initializeFabric, renderCanvas } from "@/lib/canvas";
 import { handleDelete, handleKeyDown } from "@/lib/key-events";
 import { ActiveElement, Attributes } from "@/types/type";
 import { defaultNavElement } from "@/constants";
@@ -178,6 +178,41 @@ export default function Page() {
       handleCanvasObjectScaling({
         options,
         setElementAttributes,
+      });
+    });
+
+    /**
+     * listen to the path created event on the canvas which is fired when
+     * the user creates a path on the canvas using the freeform drawing
+     * mode
+     */
+    canvas.on("path:created", (options) => {
+      handlePathCreated({
+        options,
+        syncShapeInStorage,
+      });
+    });
+
+    /**
+     * listen to the object modified event on the canvas which is fired
+     * when the user modifies an object on the canvas. Basically, when the
+     * user changes the width, height, color etc properties/attributes of
+     * the object or moves the object on the canvas.
+     */
+    canvas.on("object:modified", (options) => {
+      handleCanvasObjectModified({
+        options,
+        syncShapeInStorage,
+      });
+    });
+
+    /**
+     * listen to the object moving event on the canvas which is fired
+     * when the user moves an object on the canvas.
+     */
+    canvas?.on("object:moving", (options) => {
+      handleCanvasObjectMoving({
+        options,
       });
     });
 

@@ -2,9 +2,9 @@
 
 import { useCallback, useEffect, useState } from "react";
 
-import { useBroadcastEvent, useEventListener, useMyPresence, useOthers } from "@/liveblocks.config";
+import { useBroadcastEvent, useEventListener, useMyPresence } from "@/liveblocks.config";
 import useInterval from "@/hooks/useInterval";
-import { CursorMode, CursorState, Reaction, ReactionEvent } from "@/types/type";
+import { CursorMode, CursorState, Reaction } from "@/types/type";
 import { shortcuts } from "@/constants";
 
 import { Comments } from "./comments/Comments";
@@ -21,8 +21,8 @@ type Props = {
 };
 
   const Live = ({ canvasRef, undo, redo }: Props) => {
-  const others = useOthers();
-  const [{ cursor }, updateMyPresence] = useMyPresence() as any;
+
+  const [{ cursor }, updateMyPresence] = useMyPresence();
   const broadcast = useBroadcastEvent();
   const [reactions, setReactions] = useState<Reaction[]>([]);
   const [cursorState, setCursorState] = useState<CursorState>({
@@ -59,7 +59,7 @@ type Props = {
 
   
   useEventListener((eventData) => {
-    const event = eventData.event as ReactionEvent;
+    const event = eventData.event ;
     setReactions((reactions) =>
       reactions.concat([
         {
@@ -230,7 +230,7 @@ type Props = {
         )}
 
         {/* Show the live cursors of other users */}
-        <LiveCursors others={others} />
+        <LiveCursors />
 
         {/* Show the comments */}
         <Comments />
