@@ -4,7 +4,7 @@ import { ReactionEvent } from "./types/type";
 
 const client = createClient({
   throttle: 16,
-  publicApiKey: process.env.NEXT_PUBLIC_LIVEBLOCKS_PUBLIC_KEY!,
+  publicApiKey: "pk_dev_upKmG8IfX1t_4JIsX9bAEW0By2ZVhoKecgLmhjJwH-sDUrYzHdJEUD5gvtnCognr",
   async resolveUsers({ userIds }) {
     // Used only for Comments. Return a list of user information retrieved
     // from `userIds`. This info is used in comments, mentions etc.
