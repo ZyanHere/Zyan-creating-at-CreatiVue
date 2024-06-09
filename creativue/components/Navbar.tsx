@@ -9,7 +9,8 @@ import { ActiveElement, NavbarProps } from "@/types/type";
 import { Button } from "./ui/button";
 import ActiveUsers from "./users/ActiveUsers";
 import ShapesMenu from "./ShapesMenu";
-import NewThread from "./comments/NewThread";
+import { NewThread } from "./comments/NewThread";
+
 
 
 const Navbar = ({ activeElement, imageInputRef, handleImageUpload, handleActiveElement }: NavbarProps) => {

@@ -8,7 +8,7 @@ import { useEffect, useRef, useState } from "react";
 import { fabric } from 'fabric';
 import { handleCanvasMouseDown, handleCanvasMouseUp, handleCanvasObjectScaling, handleCanvasSelectionCreated, handleCanvasZoom, handleCanvaseMouseMove, handleResize, initializeFabric, renderCanvas } from "@/lib/canvas";
 import { handleDelete, handleKeyDown } from "@/lib/key-events";
-import { ActiveElement } from "@/types/type";
+import { ActiveElement, Attributes } from "@/types/type";
 import { defaultNavElement } from "@/constants";
 import { useMutation, useRedo, useStorage, useUndo } from "@/liveblocks.config";
 import { handleImageUpload } from "@/lib/shapes";
@@ -246,6 +246,7 @@ export default function Page() {
   return (
       <main className="h-screen overflow-hidden">
         <Navbar
+        imageInputRef={imageInputRef}
         activeElement={activeElement}
         handleImageUpload={(e: any) => {
           e.stopPropagation();

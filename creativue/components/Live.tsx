@@ -6,14 +6,13 @@ import { useBroadcastEvent, useEventListener, useMyPresence, useOthers } from "@
 import useInterval from "@/hooks/useInterval";
 import { CursorMode, CursorState, Reaction, ReactionEvent } from "@/types/type";
 import { shortcuts } from "@/constants";
-import CursorChat from "./cursor/CursorChat";
-import LiveCursors from "./cursor/LiveCursor";
 
-// import { Comments } from "./comments/Comments";
-// import { CursorChat, FlyingReaction, LiveCursors, ReactionSelector } from "./index";
+import { Comments } from "./comments/Comments";
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from "./ui/context-menu";
-import ReactionSelector from "./reaction/ReactionButton";
 import FlyingReaction from "./reaction/FlyingReaction";
+import CursorChat from "./cursor/CursorChat";
+import ReactionSelector from "./reaction/ReactionButton";
+import LiveCursors from "./cursor/LiveCursor";
 
 type Props = {
   canvasRef: React.MutableRefObject<HTMLCanvasElement | null>;
@@ -21,46 +20,26 @@ type Props = {
   redo: () => void;
 };
 
-const Live = ({ canvasRef, undo, redo }: Props) => {
-  /**
-   * useOthers returns the list of other users in the room.
- 
-   */
+  const Live = ({ canvasRef, undo, redo }: Props) => {
   const others = useOthers();
-
-  /**
-   * useMyPresence returns the presence of the current user in the room.
-   * It also returns a function to update the presence of the current user.
-   */
   const [{ cursor }, updateMyPresence] = useMyPresence() as any;
-
-  /**
-   * useBroadcastEvent is used to broadcast an event to all the other users in the room.
-   */
   const broadcast = useBroadcastEvent();
-
-  // store the reactions created on mouse click
   const [reactions, setReactions] = useState<Reaction[]>([]);
-
-  // track the state of the cursor (hidden, chat, reaction, reaction selector)
   const [cursorState, setCursorState] = useState<CursorState>({
     mode: CursorMode.Hidden,
   });
 
-  // set the reaction of the cursor
+
   const setReaction = useCallback((reaction: string) => {
     setCursorState({ mode: CursorMode.Reaction, reaction, isPressed: false });
   }, []);
 
-  // Remove reactions that are not visible anymore (every 1 sec)
   useInterval(() => {
     setReactions((reactions) => reactions.filter((reaction) => reaction.timestamp > Date.now() - 4000));
   }, 1000);
 
-  // Broadcast the reaction to other users (every 100ms)
   useInterval(() => {
     if (cursorState.mode === CursorMode.Reaction && cursorState.isPressed && cursor) {
-      // concat all the reactions created on mouse click
       setReactions((reactions) =>
         reactions.concat([
           {
@@ -70,8 +49,6 @@ const Live = ({ canvasRef, undo, redo }: Props) => {
           },
         ])
       );
-
-      // Broadcast the reaction to other users
       broadcast({
         x: cursor.x,
         y: cursor.y,
@@ -80,10 +57,7 @@ const Live = ({ canvasRef, undo, redo }: Props) => {
     }
   }, 100);
 
-
-//     useEventListener is used to listen to events broadcasted by other users.
-   
-
+  
   useEventListener((eventData) => {
     const event = eventData.event as ReactionEvent;
     setReactions((reactions) =>
@@ -97,7 +71,6 @@ const Live = ({ canvasRef, undo, redo }: Props) => {
     );
   });
 
-  // Listen to keyboard events to change the cursor state
   useEffect(() => {
     const onKeyUp = (e: KeyboardEvent) => {
       if (e.key === "/") {
@@ -129,19 +102,15 @@ const Live = ({ canvasRef, undo, redo }: Props) => {
     };
   }, [updateMyPresence]);
 
-
-
-  // Listen to mouse events to change the cursor state
   const handlePointerMove = useCallback((event: React.PointerEvent) => {
     event.preventDefault();
 
-    // if cursor is not in reaction selector mode, update the cursor position
+  
     if (cursor == null || cursorState.mode !== CursorMode.ReactionSelector) {
-      // get the cursor position in the canvas
+
       const x = event.clientX - event.currentTarget.getBoundingClientRect().x;
       const y = event.clientY - event.currentTarget.getBoundingClientRect().y;
 
-      // broadcast the cursor position to other users
       updateMyPresence({
         cursor: {
           x,
@@ -151,7 +120,6 @@ const Live = ({ canvasRef, undo, redo }: Props) => {
     }
   }, []);
 
-  // Hide the cursor when the mouse leaves the canvas
   const handlePointerLeave = useCallback(() => {
     setCursorState({
       mode: CursorMode.Hidden,
@@ -162,10 +130,10 @@ const Live = ({ canvasRef, undo, redo }: Props) => {
     });
   }, []);
 
-  // Show the cursor when the mouse enters the canvas
+
   const handlePointerDown = useCallback(
     (event: React.PointerEvent) => {
-      // get the cursor position in the canvas
+  
       const x = event.clientX - event.currentTarget.getBoundingClientRect().x;
       const y = event.clientY - event.currentTarget.getBoundingClientRect().y;
 
@@ -176,7 +144,6 @@ const Live = ({ canvasRef, undo, redo }: Props) => {
         },
       });
 
-      // if cursor is in reaction mode, set isPressed to true
       setCursorState((state: CursorState) =>
         cursorState.mode === CursorMode.Reaction ? { ...state, isPressed: true } : state
       );
@@ -184,14 +151,12 @@ const Live = ({ canvasRef, undo, redo }: Props) => {
     [cursorState.mode, setCursorState]
   );
 
-  // hide the cursor when the mouse is up
   const handlePointerUp = useCallback(() => {
     setCursorState((state: CursorState) =>
       cursorState.mode === CursorMode.Reaction ? { ...state, isPressed: false } : state
     );
   }, [cursorState.mode, setCursorState]);
 
-  // trigger respective actions when the user clicks on the right menu
   const handleContextMenuClick = useCallback((key: string) => {
     switch (key) {
       case "Chat":
@@ -234,8 +199,8 @@ const Live = ({ canvasRef, undo, redo }: Props) => {
       >
         <canvas ref={canvasRef} />
 
-       {/* Render the reactions */}
-       {reactions.map((reaction) => (
+        {/* Render the reactions */}
+        {reactions.map((reaction) => (
           <FlyingReaction
             key={reaction.timestamp.toString()}
             x={reaction.point.x}
@@ -268,7 +233,7 @@ const Live = ({ canvasRef, undo, redo }: Props) => {
         <LiveCursors others={others} />
 
         {/* Show the comments */}
-        {/* <Comments /> */}
+        <Comments />
       </ContextMenuTrigger>
 
       <ContextMenuContent className="right-menu-content">
