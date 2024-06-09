@@ -6,7 +6,7 @@ import Navbar from "@/components/Navbar";
 import RightSidebar from "@/components/RightSidebar";
 import { useEffect, useRef, useState } from "react";
 import { fabric } from 'fabric';
-import { handleCanvasMouseDown, handleCanvasMouseUp, handleCanvaseMouseMove, handleResize, initializeFabric, renderCanvas } from "@/lib/canvas";
+import { handleCanvasMouseDown, handleCanvasMouseUp, handleCanvasObjectScaling, handleCanvasSelectionCreated, handleCanvasZoom, handleCanvaseMouseMove, handleResize, initializeFabric, renderCanvas } from "@/lib/canvas";
 import { handleDelete, handleKeyDown } from "@/lib/key-events";
 import { ActiveElement } from "@/types/type";
 import { defaultNavElement } from "@/constants";
@@ -23,6 +23,7 @@ export default function Page() {
   const selectedShapeRef = useRef<string | null>(null);
   const activeObjectRef = useRef<fabric.Object | null>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
+  const isEditingRef = useRef(false);
 
   const canvasObjects = useStorage((root) => root.canvasObjects);
 
@@ -42,6 +43,16 @@ export default function Page() {
     name: "",
     value: "",
     icon: "",
+  });
+
+  const [elementAttributes, setElementAttributes] = useState<Attributes>({
+    width: "",
+    height: "",
+    fontSize: "",
+    fontFamily: "",
+    fontWeight: "",
+    fill: "#aabbcc",
+    stroke: "#aabbcc",
   });
 
   const deleteAllShapes = useMutation(({ storage }) => {
@@ -147,6 +158,40 @@ export default function Page() {
       });
     });
 
+    /**
+     * listen to the selection created event on the canvas which is fired
+     * when the user selects an object on the canvas.
+     */
+    canvas.on("selection:created", (options) => {
+      handleCanvasSelectionCreated({
+        options,
+        isEditingRef,
+        setElementAttributes,
+      });
+    });
+
+     /**
+     * listen to the scaling event on the canvas which is fired when the
+     * user scales an object on the canvas.
+     */
+     canvas.on("object:scaling", (options) => {
+      handleCanvasObjectScaling({
+        options,
+        setElementAttributes,
+      });
+    });
+
+    /**
+     * listen to the mouse wheel event on the canvas which is fired when
+     * the user scrolls the mouse wheel on the canvas.
+     */
+    canvas.on("mouse:wheel", (options) => {
+      handleCanvasZoom({
+        options,
+        canvas,
+      });
+    });
+
     window.addEventListener("resize", () => {
       handleResize({
         canvas: fabricRef.current,
@@ -219,6 +264,11 @@ export default function Page() {
         <Live canvasRef={canvasRef} undo={undo} redo={redo} />
 
         <RightSidebar
+          elementAttributes={elementAttributes}
+          setElementAttributes={setElementAttributes}
+          fabricRef={fabricRef}
+          isEditingRef={isEditingRef}
+          activeObjectRef={activeObjectRef}
           syncShapeInStorage={syncShapeInStorage}
         />
       </section>
