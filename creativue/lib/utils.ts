@@ -102,7 +102,8 @@ export const exportToPdf = () => {
   const canvas = document.querySelector("canvas");
 
   if (!canvas) return;
-  
+
+  // use jspdf
   const doc = new jsPDF({
     orientation: "landscape",
     unit: "px",

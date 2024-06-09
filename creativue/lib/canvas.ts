@@ -45,14 +45,21 @@ export const handleCanvasMouseDown = ({
   isDrawing,
   shapeRef,
 }: CanvasMouseDown) => {
-
+  // get pointer coordinates
   const pointer = canvas.getPointer(options.e);
+
+  /**
+   * get target object i.e., the object that is clicked
+   * findtarget() returns the object that is clicked
+   *
+   * findTarget: http://fabricjs.com/docs/fabric.Canvas.html#findTarget
+   */
   const target = canvas.findTarget(options.e, false);
 
-
+  // set canvas drawing mode to false
   canvas.isDrawingMode = false;
 
-
+  // if selected shape is freeform, set drawing mode to true and return
   if (selectedShapeRef.current === "freeform") {
     isDrawing.current = true;
     canvas.isDrawingMode = true;
@@ -61,26 +68,35 @@ export const handleCanvasMouseDown = ({
   }
 
   canvas.isDrawingMode = false;
+
+  // if target is the selected shape or active selection, set isDrawing to false
   if (
     target &&
     (target.type === selectedShapeRef.current ||
       target.type === "activeSelection")
   ) {
     isDrawing.current = false;
+
+    // set active object to target
     canvas.setActiveObject(target);
 
-  
+    /**
+     * setCoords() is used to update the controls of the object
+     * setCoords: http://fabricjs.com/docs/fabric.Object.html#setCoords
+     */
     target.setCoords();
   } else {
     isDrawing.current = true;
+
+    // create custom fabric object/shape and set it to shapeRef
     shapeRef.current = createSpecificShape(
       selectedShapeRef.current,
       pointer as any
     );
 
-
+    // if shapeRef is not null, add it to canvas
     if (shapeRef.current) {
-
+      // add: http://fabricjs.com/docs/fabric.Canvas.html#add
       canvas.add(shapeRef.current);
     }
   }
@@ -144,6 +160,8 @@ export const handleCanvaseMouseMove = ({
       break;
   }
 
+  // render objects on canvas
+  // renderAll: http://fabricjs.com/docs/fabric.Canvas.html#renderAll
   canvas.renderAll();
 
   // sync shape in storage
@@ -152,6 +170,7 @@ export const handleCanvaseMouseMove = ({
   }
 };
 
+// handle mouse up event on canvas to stop drawing shapes
 export const handleCanvasMouseUp = ({
   canvas,
   isDrawing,
@@ -339,6 +358,7 @@ export const renderCanvas = ({
           fabricRef.current?.add(enlivenedObj);
         });
       },
+      
       "fabric"
     );
   });

@@ -7,14 +7,8 @@ import { useOthers, useSelf } from "@/liveblocks.config";
 
 import Avatar from "./Avatar";
 
-import styles from "./index.module.css"
-
 const ActiveUsers = () => {
   const others = useOthers();
-
-  /**
-   * useSelf returns the current user details in the room
-   */
   const currentUser = useSelf();
 
   // memoize the result of this function so that it doesn't change on every render but only when there are new users joining the room

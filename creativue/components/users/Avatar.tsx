@@ -1,7 +1,6 @@
 import Image from "next/image";
 
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
-import styles from "./Avatar.module.css"
 
 type Props = {
   name: string;
