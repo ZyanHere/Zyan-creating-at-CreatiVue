@@ -2,9 +2,12 @@ import { LiveMap, createClient } from "@liveblocks/client";
 import { createRoomContext } from "@liveblocks/react";
 import { ReactionEvent } from "./types/type";
 
+console.log("Liveblocks API Key:", process.env.NEXT_PUBLIC_LIVEBLOCKS_PUBLIC_KEY);
+
 const client = createClient({
   throttle: 16,
-  publicApiKey: "pk_dev_upKmG8IfX1t_4JIsX9bAEW0By2ZVhoKecgLmhjJwH-sDUrYzHdJEUD5gvtnCognr",
+  publicApiKey: process.env.NEXT_PUBLIC_LIVEBLOCKS_PUBLIC_KEY!,
+  
   async resolveUsers({ userIds }) {
     // Used only for Comments. Return a list of user information retrieved
     // from `userIds`. This info is used in comments, mentions etc.
