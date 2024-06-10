@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Work_Sans } from "next/font/google";
 import "./globals.css";
-import Room from "./Room";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { Room } from "./Room";
 
 export const metadata: Metadata = {
   title: "CreatiVue",
